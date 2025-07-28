@@ -1,9 +1,14 @@
 import { LogOutButton } from "@/components/AuthButtons";
+import { auth } from "@/auth";
+export default async function Dashboard() {
+  const session = await auth();
 
-export default function Dashboard() {
   return (
-    <div className="h-screen w-screen flex justify-center items-center">
+    <div className="h-screen text-center text-white flex-col  w-screen flex justify-center items-center">
+      <div>UserName:{session?.user?.name}</div>
       <LogOutButton />
     </div>
   );
+
+  return <div className="text-center">You are not logged in.</div>;
 }
