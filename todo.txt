@@ -1,0 +1,5 @@
+---
+todo in summarizer:
+
+- Skip summarzing already processed mails, based on messageId but that to be stored in supabase
+- (optional) Avoid summarizing blank mails

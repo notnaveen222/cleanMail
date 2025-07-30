@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { auth } from "./auth";
+
 const protectedRoutes = ["/dashboard"];
 
 export default async function middleware(request: NextRequest) {
@@ -14,3 +15,5 @@ export default async function middleware(request: NextRequest) {
   }
   return NextResponse.next();
 }
+
+//config -> seems optional, read thru
