@@ -1,8 +1,8 @@
 import crypto from "crypto";
 
 const ALGO = "aes-256-gcm";
-const IV_LENGTH = 12; // Recommended for GCM
-const KEY = Buffer.from(process.env.TOKEN_SECRET!, "hex"); // 32-byte key
+const IV_LENGTH = 12;
+const KEY = Buffer.from(process.env.CRYPTO_TOKEN_SECRET!, "hex"); // 32-byte key
 
 export function encrypt(text: string): string {
   const iv = crypto.randomBytes(IV_LENGTH);

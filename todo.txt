@@ -3,3 +3,9 @@ todo in summarizer:
 
 - Skip summarzing already processed mails, based on messageId but that to be stored in supabase
 - (optional) Avoid summarizing blank mails
+
+---
+transaction validation while fetching and parsing multiple emails and while writing to supabase (complex but good)
+
+
+-- gmail watch api exiry handle (some 7 days)

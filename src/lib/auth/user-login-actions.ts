@@ -21,15 +21,13 @@ export async function handleUserLogin({
     console.error("Missing Access Token");
     return;
   }
-  //do encrypting for refresh Token
-
   const userpayload = {
     name: profile.name,
     email: profile.email,
     avatar_url: profile.picture,
     google_id: profile.sub,
     last_historyId: "init",
-    ...(account.refresh_token && { refresh_token: account.refresh_token }),
+    refresh_token: account.refresh_token,
     access_token: access_token,
     token_expiresAt:
       Math.floor(Date.now() / 1000) + (account.expires_in ?? 3600),

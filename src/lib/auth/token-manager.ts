@@ -80,6 +80,7 @@ export async function getValidAccessToken({
   last_historyId: string;
   email: string;
 }): Promise<string | null> {
+  //check if token is expired
   if (!isTokenExpired(token_expiresAt)) {
     return access_token;
   }

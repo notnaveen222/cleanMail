@@ -1,3 +1,4 @@
+import { GptSummarizer } from "@/lib/ai/summarizer";
 import { getValidAccessToken } from "@/lib/auth/token-manager";
 import { extractBody } from "@/lib/gmail/extractBody";
 import { fetchMessage } from "@/lib/gmail/fetchMessage";
@@ -14,17 +15,17 @@ export async function POST(request: NextRequest) {
   console.log("Gmail Pushed\n");
   const { data, error } = await supabase
     .from("users")
-    .select("access_token,refresh_token, token_expiresAt, last_historyId")
+    .select("id, access_token, refresh_token, token_expiresAt, last_historyId")
     .eq("email", email)
     .single();
 
-  //yet to do,If Access Token Expired handle It with refresh token, use a helper Function
   if (!data) {
     console.log("No user data found with the given mail");
     return NextResponse.json({
       message: "No user data found with the given mail",
     });
   }
+  //expired token handling
   const access_token = await getValidAccessToken({ ...data, email });
   if (!access_token) {
     console.log("Could not get valid access token");
@@ -54,9 +55,45 @@ export async function POST(request: NextRequest) {
     }
   }
   for (const messageId of newMessageIds) {
-    const message = await fetchMessage(messageId, access_token);
-    const extracted_body = extractBody(message);
-    console.log(extracted_body);
+    try {
+      const message = await fetchMessage(messageId, access_token);
+      if (!message.labelIds?.includes("INBOX")) continue;
+      const extracted_body = extractBody(message);
+      //summarize and store in db
+      try {
+        const summarized_email = await GptSummarizer({
+          emailBody: extracted_body,
+        });
+        if (!summarized_email?.trim()) {
+          console.warn(
+            `Empty summary for message ${messageId}, skipping insert`
+          );
+          continue;
+        }
+        const emailPayload = {
+          user_id: data.id,
+          message_id: messageId,
+          summary: summarized_email,
+        };
+        try {
+          const { error } = await supabase
+            .from("user-mails")
+            .insert(emailPayload);
+          if (error) {
+            console.log(
+              "Supabase error when storing the summarized text:",
+              error.message
+            );
+          }
+        } catch (insertErr) {
+          console.error("Insert failed:", insertErr);
+        }
+      } catch (error) {
+        console.error(`Error processing message ${messageId}:`, error);
+      }
+    } catch (error) {
+      console.error("GPT API Error summarizing the email", error);
+    }
   }
   //If Success Update histroy Id. Yet to impl, summarizer
   const latestHistoryId = historyData.history.at(-1)?.id ?? newHistoryId;
@@ -71,7 +108,6 @@ export async function POST(request: NextRequest) {
         console.error("Failed to update last_historyId:", updateHistoryIdError);
       }
     }
-    return NextResponse.json({ message: "OK" }); //same as below
   } catch (error) {
     console.log("Error in Updating history Id", error);
   }
