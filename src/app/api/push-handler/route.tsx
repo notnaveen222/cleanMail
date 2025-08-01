@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
           const { error } = await supabase
             .from("user-mails")
             .insert(emailPayload);
+
           if (error) {
             console.log(
               "Supabase error when storing the summarized text:",
