@@ -8,6 +8,10 @@
 @theme {
   --color-subtitle-gray: #6e6e6e;
   --color-dark-gray: #181818;
+  --color-shad-gray-bg: oklch(0.97 0 0);
+  --color-shad-border: oklch(1 0 0 / 20%);
+  --color-shad-sidebar-border: oklch(1 0 0 / 10%);
+  --color-subtitle: rgb(137 137 137 / var(--tw-text-opacity, 1));
 }
 
 @theme inline {

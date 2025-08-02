@@ -7,7 +7,7 @@ export function AuthButton() {
   return (
     <button
       onClick={() => router.push("/auth")}
-      className="px-3 py-2 border-2 hover:border-white transition-all duration-200 ease-in-out border-white/40 rounded-xl cursor-pointer"
+      className="px-3 py-2 border-2 hover:border-white transition-all duration-200 ease-in-out border-shad-border rounded-xl cursor-pointer"
     >
       Get Started
     </button>
