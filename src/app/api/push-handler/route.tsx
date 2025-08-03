@@ -3,6 +3,7 @@ import { getValidAccessToken } from "@/lib/auth/token-manager";
 import { extractBody } from "@/lib/gmail/extractBody";
 import { fetchMessage } from "@/lib/gmail/fetchMessage";
 import { supabase } from "@/lib/supabase";
+import { getUserCategories } from "@/lib/supabase/supabase";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -60,11 +61,13 @@ export async function POST(request: NextRequest) {
       if (!message.labelIds?.includes("INBOX")) continue;
       const extracted_body = extractBody(message);
       //summarize and store in db
+      const userCategories = await getUserCategories(email);
       try {
-        const summarized_email = await GptSummarizer({
+        const { summary, category } = await GptSummarizer({
           emailBody: extracted_body,
+          categories: userCategories,
         });
-        if (!summarized_email?.trim()) {
+        if (!summary?.trim()) {
           console.warn(
             `Empty summary for message ${messageId}, skipping insert`
           );
@@ -73,7 +76,9 @@ export async function POST(request: NextRequest) {
         const emailPayload = {
           user_id: data.id,
           message_id: messageId,
-          summary: summarized_email,
+          summary: summary,
+          category: category,
+          is_read: false,
         };
         try {
           const { error } = await supabase

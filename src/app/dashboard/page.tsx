@@ -26,9 +26,9 @@ export default function Dashboard() {
     fetchUserDate();
   }, []);
   const handleGPTTest = async () => {
-    const response = await axios.post("http://localhost:3000/api/ai-actions", {
-      emailBody: testEmailBody,
-    });
+    // const response = await axios.post("http://localhost:3000/api/ai-actions", {
+    //   emailBody: testEmailBody,
+    // });
   };
   return (
     <div className="h-screen text-center text-white flex-col  w-screen flex justify-center items-center">

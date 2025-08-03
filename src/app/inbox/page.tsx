@@ -1,5 +1,5 @@
 import EmailDetail from "./components/EmailDetail";
-import EmailList from "./components/EmailList";
+import EmailList from "./components/EmailList/EmailList";
 
 export default async function Inbox() {
   return (

@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import Sidebar from "@/app/inbox/components/Sidebar";
-import { getUserByMail } from "@/lib/supabase/supabase";
+import { getEmailCounts, getUserByMail } from "@/lib/supabase/supabase";
 
 export default async function InboxLayout({
   children,
@@ -11,10 +11,13 @@ export default async function InboxLayout({
   const user = session?.user?.email
     ? await getUserByMail(session.user.email)
     : "";
+  const emailCounts = session?.user?.email
+    ? await getEmailCounts(session?.user?.email)
+    : null;
   if (user) {
     return (
       <div className="flex w-full ">
-        <Sidebar user={user} />
+        <Sidebar user={user} emailCounts={emailCounts} />
         <div className="grow">{children}</div>
       </div>
     );

@@ -8,7 +8,9 @@ export default function Accordion() {
     <div>
       <div className="flex justify-between transition-all duration-300 ease-in-out">
         <div className={`flex items-center gap-x-2 `}>
-          <ArrowTrendingUp />
+          <span className="">
+            <ArrowTrendingUp />
+          </span>
           <div>Today's Update</div>
         </div>
         <div

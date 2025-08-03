@@ -12,6 +12,7 @@
   --color-shad-border: oklch(1 0 0 / 20%);
   --color-shad-sidebar-border: oklch(1 0 0 / 10%);
   --color-subtitle: rgb(137 137 137 / var(--tw-text-opacity, 1));
+  --color-brand-blue: rgb(0 111 254 / var(--tw-bg-opacity, 1));
 }
 
 @theme inline {

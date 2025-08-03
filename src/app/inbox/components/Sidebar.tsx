@@ -11,7 +11,13 @@ interface User {
   avatar_url: string;
 }
 
-export default function Sidebar({ user }: { user: User }) {
+export default function Sidebar({
+  user,
+  emailCounts,
+}: {
+  user: User;
+  emailCounts: any;
+}) {
   return (
     <div className="text-white border-r w-full overflow-hidden max-w-56 min-h-screen border-r-shad-sidebar-border">
       <div className="flex flex-col py-5 pb-7 px-3 gap-2 border-b border-b-shad-sidebar-border">

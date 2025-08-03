@@ -4,6 +4,7 @@ import AddCategory from "./AddCategory";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useEmailDashboard } from "@/hooks/useEmailDashboard";
 
 interface Category {
   id: string;
@@ -13,6 +14,7 @@ interface Category {
 export default function CategoriesMenu() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { categoryCounts } = useEmailDashboard();
   const fetchCategories = async () => {
     try {
       const res = await axios.get("/api/categories"); // you'll need to build this
@@ -62,8 +64,9 @@ export default function CategoriesMenu() {
               >
                 <div className="">{cat.name}</div>
                 <div className="flex gap-x-1">
-                  <div className="bg-shad-gray-bg/20 text-sm rounded-md  px-1.5">
-                    12
+                  <div className="bg-brand-blue font-semibold text-sm rounded-md px-1.5">
+                    {categoryCounts.find((c) => c.category === cat.name)
+                      ?.count ?? 0}
                   </div>
                 </div>
               </div>
