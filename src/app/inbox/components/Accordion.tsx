@@ -1,8 +1,10 @@
 "use client";
 import { ArrowTrendingUp, ChevronDown } from "@/components/icons";
+import { useEmailDashboard } from "@/hooks/useEmailDashboard";
 import { useState } from "react";
 
 export default function Accordion() {
+  const { todayCount, unreadCount, readCount } = useEmailDashboard();
   const [expanded, setExpanded] = useState<boolean>(true);
   return (
     <div>
@@ -27,8 +29,9 @@ export default function Accordion() {
           expanded ? "max-h-40 opacity-100  mt-3" : "max-h-0 opacity-0 mt-0"
         } transition-all duration-300 ease-in-out`}
       >
-        47 new emails
-        <br />2 Unread - 4 Read
+        {todayCount} new emails
+        <br />
+        {unreadCount} Unread - {readCount} Read
       </div>
     </div>
   );

@@ -5,14 +5,11 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const session = await auth();
-  const email = session?.user?.email;
-
-  if (!email) {
+  if (!session) {
     return NextResponse.json({ message: "Not Authorized" }, { status: 401 });
   }
-
-  const userId = await getUserID(email);
-
+  console.log(session.user.userId);
+  const userId = session.user.userId;
   if (!userId) {
     return NextResponse.json(
       { message: "User not found in database" },

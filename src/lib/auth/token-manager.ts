@@ -101,3 +101,63 @@ export async function getValidAccessToken({
     return null;
   }
 }
+
+export async function getValidAccessTokenByEmail(
+  email: string
+): Promise<string | null> {
+  // Step 1: Fetch token details from Supabase
+  const userToken = await getTokenDetailsByEmail(email); // your custom function
+
+  if (!userToken) {
+    console.error("No token found for user:", email);
+    return null;
+  }
+
+  const {
+    access_token,
+    refresh_token,
+    token_expiresAt,
+  }: {
+    access_token: string;
+    refresh_token: string;
+    token_expiresAt: number;
+  } = userToken;
+
+  // Step 2: Check if token is still valid
+  if (!isTokenExpired(token_expiresAt)) {
+    return access_token;
+  }
+
+  // Step 3: Attempt refresh
+  if (!refresh_token) {
+    console.error("No refresh token available for user:", email);
+    return null;
+  }
+
+  try {
+    const refreshed_token = await refreshAccessToken(refresh_token);
+    const updateSuccess = await updateTokenInSupabase(email, refreshed_token);
+    if (!updateSuccess) return null;
+
+    return refreshed_token.access_token;
+  } catch (error) {
+    console.error("Failed to refresh token for user:", email, error);
+    return null;
+  }
+}
+
+// From your Supabase table (e.g. users or tokens)
+export async function getTokenDetailsByEmail(email: string) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("access_token, refresh_token, token_expiresAt")
+    .eq("email", email)
+    .single();
+
+  if (error) {
+    console.error("Error fetching token info:", error);
+    return null;
+  }
+
+  return data;
+}

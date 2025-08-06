@@ -1,21 +1,29 @@
-import EmailDetail from "./components/EmailDetail";
-import EmailList from "./components/EmailList/EmailList";
+import { auth } from "@/auth";
+import InboxClient from "./InboxClient";
+import {
+  getEmailCounts,
+  getUserByMail,
+  getUserEmails,
+  getUserID,
+} from "@/lib/supabase/supabase";
+import Sidebar from "./components/Sidebar";
+import { InboxProvider } from "@/context/InboxContext";
 
 export default async function Inbox() {
+  const session = await auth();
+  if (!session?.user.email) return <div>Login </div>;
+  const user = await getUserByMail(session.user.email);
+  if (!user) return <div>User not found</div>;
+  const userId = await getUserID(session.user.email);
+  const emails = await getUserEmails(userId);
   return (
-    <div className="text-white h-full flex flex-col">
-      <div className="w-full border-b px-3 py-2 border-b-shad-sidebar-border">
-        <div className="flex items-end gap-x-2">
-          <div className="text-2xl p-0">cleanMail</div>
-          <div className="text-subtitle text-sm relative -top-[1.6px] ">
-            Inbox
-          </div>
+    <InboxProvider>
+      <div className="text-white overflow-hidden h-screen w-full flex">
+        <Sidebar user={user} />
+        <div>
+          <InboxClient emails={emails} />
         </div>
       </div>
-      <div className=" grid grid-cols-3 h-full">
-        <EmailList />
-        <EmailDetail />
-      </div>
-    </div>
+    </InboxProvider>
   );
 }

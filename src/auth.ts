@@ -31,12 +31,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.accessToken = account.access_token;
         token.expiresAt =
           Math.floor(Date.now() / 1000) + (account.expires_in ?? 3600);
-        await handleUserLogin({ account, profile });
+        const userId = await handleUserLogin({ account, profile });
+        token.userId = userId;
       }
-
       return token;
     },
     async session({ session, token }) {
+      session.user = {
+        ...session.user,
+        userId: token.userId as string,
+      };
       session.accessToken = token.accessToken as string;
       return session;
     },

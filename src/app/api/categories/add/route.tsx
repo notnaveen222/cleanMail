@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { supabase } from "@/lib/supabase";
-import { getUserByMail, getUserID } from "@/lib/supabase/supabase";
+import { getUserID } from "@/lib/supabase/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -8,10 +8,10 @@ export async function POST(request: NextRequest) {
     const session = await auth();
     const body = await request.json();
     const categoryName = body.name;
-    if (!session?.user?.email) {
+    if (!session?.user.userId) {
       return NextResponse.json({ message: "unauthorzied" });
     }
-    const userId = await getUserID(session?.user?.email);
+    const userId = session.user.userId;
     const categoryPayload = {
       user_id: userId,
       name: categoryName,

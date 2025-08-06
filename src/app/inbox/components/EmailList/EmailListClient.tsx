@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { useEmailDashboard } from "@/hooks/useEmailDashboard";
 import Accordion from "../Accordion";
 import { SeenIcon2 } from "@/components/icons";
+import { useInbox } from "@/context/InboxContext";
 
 type Email = {
   message_id: string;
@@ -13,24 +12,27 @@ type Email = {
   is_read: boolean;
 };
 
-export default function EmailList({ emails }: { emails: Email[] }) {
-  const { todayCount, readCount, unreadCount, isLoading, error } =
-    useEmailDashboard();
-
+export default function EmailListClient({ emails }: { emails: Email[] }) {
+  const { selectedCategory, setSelectedEmail } = useInbox();
+  const filteredEmails = selectedCategory
+    ? selectedCategory === "Uncategorized"
+      ? emails.filter((email) => !email.category)
+      : emails.filter((email) => email.category === selectedCategory)
+    : emails;
   return (
-    <div className="col-span-1 border-r border-r-shad-sidebar-border">
+    <div className="col-span-1 overflow-y-scroll border-r border-r-shad-sidebar-border">
       <div className="border-b border-b-shad-sidebar-border px-3 py-2">
         <Accordion />
       </div>
 
-      {/* Stats Section */}
-
-      {/* Email List */}
       <div className="px-3 py-2">
-        {emails.map((email) => (
+        {filteredEmails.map((email) => (
           <div
             key={email.message_id}
-            className="hover:bg-shad-gray-bg/10 py-1 px-2 transition-all duration-300 ease-in-out rounded-lg cursor-pointer"
+            className="hover:bg-shad-gray-bg/10 py-1 px-2 transition-all  duration-300 ease-in-out rounded-lg cursor-pointer"
+            onClick={() => {
+              setSelectedEmail(email.message_id);
+            }}
           >
             <div className="mb-1">
               {email.category != null ? (
@@ -39,18 +41,29 @@ export default function EmailList({ emails }: { emails: Email[] }) {
                 </span>
               ) : (
                 <span
-                  className={`inline mr-2 text-sm border-subtitle bg-shad-sidebar-border/40 leading-8 border rounded-xl w-fit h-fit px-2 ${
-                    email.is_read ? "text-white/50" : "text-white"
-                  }`}
+                  className={`inline mr-2 text-sm  border-subtitle bg-shad-sidebar-border/40 leading-8 border rounded-xl w-fit h-fit px-2 
+                     "text-white" 
+                  `}
                 >
                   Uncategorized
                 </span>
               )}
-
-              {email.summary}
+              <span
+                className={`text-[15px] font-medium ${
+                  email.is_read ? "text-white/60" : "text-white"
+                }`}
+              >
+                {email.summary}
+              </span>
 
               <div className="text-right w-full flex justify-end gap-x-2 items-center mt-1">
-                <div className="hover:text-white text-white/50 transition-all duration-200 ease-in-out">
+                <div
+                  className={`${
+                    email.is_read
+                      ? " text-white/40"
+                      : "text-white/50 hover:text-white"
+                  }  transition-all duration-200 ease-in-out`}
+                >
                   <SeenIcon2 />
                 </div>
                 <div className="text-sm text-subtitle">
